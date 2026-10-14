@@ -2,9 +2,16 @@
 include 'db.php';
 session_start();
 
-// جلب جميع المنتجات من قاعدة البيانات
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
+
+// حساب عدد المنتجات في السلة لعرضها بجانب أيقونة Cart
+$cart_count = 0;
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $cart_count += isset($item['quantity']) ? intval($item['quantity']) : 1;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -23,7 +30,6 @@ $result = $conn->query($sql);
         :root {
             --brand-bg: #FAF8F5; 
             --brand-green: #3B5343; 
-            --brand-sage-light: #F2F5F2; 
             --brand-divider: #E7E0D6; 
             --brand-text: #2f3e35;
         }
@@ -34,11 +40,14 @@ $result = $conn->query($sql);
             color: var(--brand-text);
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .main-header {
             background-color: var(--brand-green);
-            padding: 10px 0;
+            padding: 12px 0;
         }
 
         .navbar-brand-custom {
@@ -55,28 +64,53 @@ $result = $conn->query($sql);
             color: var(--brand-green);
         }
 
+        .banner-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .banner-img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            display: block;
+            object-fit: contain;
+        }
+
         .product-card {
             background: #ffffff;
             border-radius: 12px;
             border: 1px solid var(--brand-divider);
-            transition: transform 0.2s, box-shadow 0.2s;
-            overflow: hidden;
+            padding: 20px;
             height: 100%;
+            box-shadow: 0 4px 6px rgba(59, 83, 67, 0.03);
             display: flex;
             flex-direction: column;
+            transition: transform 0.2s;
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(59, 83, 67, 0.08);
+            transform: translateY(-4px);
         }
 
         .product-img {
             width: 100%;
-            height: 220px;
+            height: 210px;
             object-fit: contain;
+            margin-bottom: 15px;
             background-color: #fff;
-            padding: 15px;
+        }
+
+        .product-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .product-link:hover h5 {
+            color: var(--brand-green);
+            text-decoration: underline;
         }
 
         .btn-bloom {
@@ -84,10 +118,7 @@ $result = $conn->query($sql);
             color: #ffffff;
             border-radius: 8px;
             font-weight: 500;
-            padding: 0.6rem 1.2rem;
             border: none;
-            transition: background-color 0.2s;
-            width: 100%;
         }
 
         .btn-bloom:hover {
@@ -95,19 +126,46 @@ $result = $conn->query($sql);
             color: #ffffff;
         }
 
-        .badge-category {
-            background-color: var(--brand-sage-light);
-            color: var(--brand-green);
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
+        .site-footer {
+            background-color: var(--brand-green);
+            color: #FAF8F5;
+            padding: 50px 0 20px 0;
+            margin-top: auto;
+        }
+
+        .site-footer h6 {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .site-footer ul {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .site-footer ul li {
+            margin-bottom: 8px;
+        }
+
+        .site-footer ul li a {
+            color: #d1d8d3;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 20px;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #b5c2bc;
         }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر المطور مع شريط التنقل الشامل -->
+    <!-- الهيدر العلوي -->
     <header class="main-header sticky-top">
         <nav class="navbar navbar-expand-lg navbar-dark p-0">
             <div class="container">
@@ -118,21 +176,24 @@ $result = $conn->query($sql);
                 </button>
 
                 <div class="collapse navbar-collapse" id="bloomNavbar">
-                    <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
+                    <ul class="navbar-nav ms-auto align-items-center gap-3 mt-3 mt-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-white active" href="index.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="advisor.php">
-                                <i class="bi bi-robot text-warning me-1"></i> Plant Advisor
+                            <a class="nav-link text-white" href="advisor.php">Plant Advisor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white position-relative" href="cart.php">
+                                <i class="bi bi-bag"></i> Cart
+                                <?php if ($cart_count > 0): ?>
+                                    <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                        <?php echo $cart_count; ?>
+                                    </span>
+                                <?php endif; ?>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="cart.php">
-                                <i class="bi bi-bag me-1"></i> Cart
-                            </a>
-                        </li>
-                        <li class="nav-item ms-lg-2">
                             <a class="btn btn-outline-light btn-sm px-3" href="login.php">Login</a>
                         </li>
                         <li class="nav-item">
@@ -144,66 +205,110 @@ $result = $conn->query($sql);
         </nav>
     </header>
 
-    <!-- قسم العرض والترحيب (Hero Banner) -->
-    <section class="py-5 text-center" style="background-color: var(--brand-sage-light);">
-        <div class="container py-3">
-            <h1 class="brand-title-font display-5 mb-3">Bring Nature Into Your Space</h1>
-            <p class="text-secondary lead fs-6 mx-auto" style="max-width: 600px;">
-                Explore our curated collection of indoor plants, pots, and expert care recommendations.
+    <!-- عرض صورة البنر الأساسية -->
+    <section class="py-4 text-center">
+        <div class="container">
+            <div class="banner-container">
+                <img src="banner" alt="Welcome to Bloom" class="banner-img" onerror="this.src='banner.jpeg';">
+            </div>
+            
+            <p class="text-secondary small mt-3 mx-auto" style="max-width: 650px;">
+                Discover your perfect green companion. Explore our curated collection of indoor plants, gardening essentials, and smart care tools.
             </p>
         </div>
     </section>
 
-    <!-- كتالوج المنتجات -->
-    <main class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="brand-title-font m-0">Featured Plants</h3>
-            <span class="text-muted small">Showing all plants</span>
-        </div>
-
+    <!-- عرض المنتجات -->
+    <main class="container my-4">
+        <h2 class="brand-title-font mb-4">Plant Store</h2>
         <div class="row g-4">
             <?php if ($result && $result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                        <div class="product-card p-3">
-                            <div class="text-end">
-                                <span class="badge-category"><?php echo htmlspecialchars($row['category'] ?? 'Indoor Plant'); ?></span>
-                            </div>
+                    <div class="col-12 col-md-4">
+                        <div class="product-card">
+                            <a href="product.php?id=<?php echo $row['product_id']; ?>" class="product-link">
+                                <img src="<?php echo htmlspecialchars($row['image']); ?>" alt="Plant" class="product-img">
+                                <h5 class="brand-title-font fs-5 mb-2 text-dark"><?php echo htmlspecialchars($row['title']); ?></h5>
+                            </a>
                             
-                            <img src="<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['title']); ?>" class="product-img">
-
-                            <div class="d-flex flex-column flex-grow-1 mt-2">
-                                <h5 class="brand-title-font fs-6 mb-1"><?php echo htmlspecialchars($row['title']); ?></h5>
-                                <p class="text-secondary small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                    <?php echo htmlspecialchars($row['description']); ?>
-                                </p>
+                            <p class="text-muted small mb-3 flex-grow-1" style="min-height: 40px;"><?php echo htmlspecialchars($row['description']); ?></p>
+                            
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                                <span class="fw-bold text-success fs-5"><?php echo number_format($row['price'], 2); ?> SAR</span>
                                 
-                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-                                    <span class="fw-bold text-success fs-5"><?php echo number_format($row['price'], 2); ?> SAR</span>
-                                    
-                                    <form action="cart.php" method="POST" class="m-0">
-                                        <input type="hidden" name="product_id" value="<?php echo $row['product_id']; ?>">
-                                        <button type="submit" class="btn btn-bloom btn-sm px-3">
-                                            <i class="bi bi-cart-plus me-1"></i> Add
-                                        </button>
-                                    </form>
-                                </div>
+                                <form action="cart.php" method="POST" class="m-0">
+                                    <input type="hidden" name="product_id" value="<?php echo $row['product_id']; ?>">
+                                    <button type="submit" class="btn btn-bloom btn-sm px-3">Add to Cart</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 <?php endwhile; ?>
             <?php else: ?>
                 <div class="col-12 text-center py-5">
-                    <p class="text-muted fs-5">No products found in the database.</p>
+                    <p class="text-muted">No products found in the database.</p>
                 </div>
             <?php endif; ?>
         </div>
     </main>
 
-    <!-- الفوتر (Footer) -->
-    <footer class="py-4 text-center border-top mt-5" style="background-color: #ffffff; border-color: var(--brand-divider) !important;">
-        <div class="container text-muted small">
-            <p class="mb-1">&copy; <?php echo date("Y"); ?> Bloom Store. All rights reserved.</p>
+    <!-- الفوتر -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h6>STAY IN THE LOOP</h6>
+                    <p class="small text-light opacity-75 mb-3">Stay in the loop with special offers, plant-parenting tips, and more.</p>
+                    <form class="input-group input-group-sm mb-3">
+                        <input type="email" class="form-control bg-transparent text-white border-light" placeholder="Enter your email">
+                        <button class="btn btn-light text-success fw-bold px-3" type="button">SUBSCRIBE</button>
+                    </form>
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6>COMPANY</h6>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Reviews</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Our Guarantee</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-6">
+                    <h6>SUPPORT</h6>
+                    <ul>
+                        <li><a href="advisor.php">Plant Advisor</a></li>
+                        <li><a href="#">Shipping & Returns</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-12">
+                    <h6>PLANT QUESTIONS?</h6>
+                    <ul>
+                        <li><a href="advisor.php">Plant Care Tips</a></li>
+                        <li><a href="#">Plant Life Blog</a></li>
+                        <li><a href="advisor.php">Contact the Grow-How® Team</a></li>
+                    </ul>
+                    <div class="d-flex gap-3 mt-3 fs-5">
+                        <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center">
+                <p class="mb-0">&copy; <?php echo date("Y"); ?> Bloom Store. All rights reserved.</p>
+                <div class="d-flex gap-3 small">
+                    <a href="#" class="text-light text-decoration-none">Terms</a>
+                    <a href="#" class="text-light text-decoration-none">Privacy Policy</a>
+                    <a href="#" class="text-light text-decoration-none">Cookie Preferences</a>
+                </div>
+            </div>
         </div>
     </footer>
 
