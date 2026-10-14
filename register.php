@@ -3,33 +3,24 @@ include 'db.php';
 session_start();
 
 $error = '';
-$success = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    // التحقق من عدم ترك حقول فارغة
-    if (empty($username) || empty($email) || empty($password)) {
-        $error = "الرجاء تعبئة جميع الحقول المطلوبة.";
+    $check = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $check->bind_param("s", $email);
+    $check->execute();
+    if ($check->get_result()->num_rows > 0) {
+        $error = 'Email is already registered.';
     } else {
-        // التحقق مما إذا كان البريد الإلكتروني مستخدماً مسبقاً
-        $checkEmail = $conn->prepare("SELECT product_id FROM users WHERE email = ?"); // للتأكد من الجدول
-        // ملاحظة: لو كان اسم جدولك users وعمود البريد email أو username
-        // سنستخدم استعلام مباشر للتحقق السريع:
-        $res = $conn->query("SELECT * FROM users WHERE email = '$email'");
-        
-        if ($res && $res->num_rows > 0) {
-            $error = "البريد الإلكتروني مستخدم مسبقاً، يجدر بك تسجيل الدخول.";
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $email, $password);
+        if ($stmt->execute()) {
+            header("Location: login.php");
+            exit();
         } else {
-            // إدخال المستخدم الجديد (يفضل تشفير كلمة المرور بـ password_hash في المشاريع الحقيقية)
-            $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
-            if ($conn->query($sql) === TRUE) {
-                $success = "تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.";
-            } else {
-                $error = "حدث خطأ ما، يرجى المحاولة لاحقاً.";
-            }
+            $error = 'Something went wrong. Please try again.';
         }
     }
 }
@@ -40,68 +31,208 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | Bloom</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
     <style>
         :root {
-            --brand-bg: #FAF8F5; 
-            --brand-green: #3B5343; 
-            --brand-sage-light: #F2F5F2; 
-            --brand-divider: #E7E0D6; 
-            --brand-text: #2f3e35;
+            --brand-green: #3B5343;
+            --light-green: #e2f0d9;
         }
-        body { background-color: var(--brand-bg); color: var(--brand-text); font-family: 'Inter', sans-serif; }
-        .main-header { background-color: var(--brand-green); padding: 12px 0; }
-        .navbar-brand-custom { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: #FAF8F5 !important; text-decoration: none; }
-        .brand-title-font { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--brand-green); }
-        .btn-bloom { background-color: var(--brand-green); color: #ffffff; border-radius: 8px; font-weight: 500; padding: 0.8rem 1.5rem; border: none; width: 100%; }
-        .btn-bloom:hover { background-color: #2c3f32; color: #ffffff; }
-        .auth-card { background: #ffffff; border-radius: 12px; border: 1px solid var(--brand-divider); padding: 35px; box-shadow: 0 10px 25px rgba(59, 83, 67, 0.05); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-green);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .split-card {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: var(--brand-green);
+            font-size: 1.3rem;
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .form-side {
+            flex: 1;
+            padding: 45px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .green-side {
+            flex: 1;
+            background-color: var(--brand-green);
+            color: #ffffff;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .card-title-text {
+            color: var(--brand-green);
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+        }
+
+        .input-group-custom {
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .input-group-custom i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .input-line {
+            width: 100%;
+            padding: 10px 10px 10px 40px;
+            border: none;
+            border-bottom: 2px solid #e0e0e0;
+            outline: none;
+            font-size: 0.95rem;
+            background: transparent;
+            box-sizing: border-box;
+        }
+
+        .input-line:focus {
+            border-bottom-color: var(--brand-green);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .btn-signup {
+            background-color: var(--brand-green);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 35px;
+            font-weight: 600;
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        .green-side h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .green-side p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .btn-outline-login {
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            background: transparent;
+            border-radius: 25px;
+            padding: 10px 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .split-card {
+                flex-direction: column;
+            }
+            .green-side {
+                padding: 30px 20px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand-custom" href="index.php">Bloom</a>
-            <a href="index.php" class="text-white text-decoration-none small"><i class="bi bi-arrow-left"></i> Back to Home</a>
-        </div>
-    </header>
+    <div class="split-card">
+        <!-- زر العودة -->
+        <a href="index.php" class="back-link" title="Back to Home">
+            <i class="bi bi-arrow-left"></i>
+        </a>
 
-    <div class="container my-5" style="max-width: 500px;">
-        <div class="auth-card">
-            <h2 class="brand-title-font mb-4 text-center">Create an Account</h2>
+        <!-- قسم النموذج على اليسار -->
+        <div class="form-side">
+            <h3 class="card-title-text">Create Account</h3>
 
             <?php if (!empty($error)): ?>
-                <div class="alert alert-danger py-2 small"><?php echo $error; ?></div>
-            <?php endif; ?>
-
-            <?php if (!empty($success)): ?>
-                <div class="alert alert-success py-2 small"><?php echo $success; ?></div>
+                <div style="color: #dc3545; font-size: 0.85rem; margin-bottom: 15px;"><?php echo $error; ?></div>
             <?php endif; ?>
 
             <form action="register.php" method="POST">
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Username</label>
-                    <input type="text" name="username" class="form-control" required placeholder="Aseel / Meaad">
+                <div class="input-group-custom">
+                    <i class="bi bi-person"></i>
+                    <input type="text" name="username" class="input-line" placeholder="Username" required>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Email Address</label>
-                    <input type="email" name="email" class="form-control" required placeholder="name@example.com">
-                </div>
-                <div class="mb-4">
-                    <label class="form-label fw-bold small text-secondary">Password</label>
-                    <input type="password" name="password" class="form-control" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-bloom mb-3">Sign Up</button>
-            </form>
 
-            <div class="text-center small text-secondary">
-                Already have an account? <a href="login.php" class="text-success fw-bold text-decoration-none">Login here</a>
-            </div>
+                <div class="input-group-custom">
+                    <i class="bi bi-envelope"></i>
+                    <input type="email" name="email" class="input-line" placeholder="E-mail" required>
+                </div>
+
+                <div class="input-group-custom">
+                    <i class="bi bi-lock"></i>
+                    <input type="password" name="password" class="input-line" placeholder="Password" required>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="terms" required checked>
+                    <label for="terms">I accept the terms of the agreement</label>
+                </div>
+
+                <button type="submit" class="btn-signup">Sign Up</button>
+            </form>
+        </div>
+
+        <!-- القسم الأخضر الداكن على اليمين -->
+        <div class="green-side">
+            <h2>Get Started</h2>
+            <p>Already have an account?</p>
+            <a href="login.php" class="btn-outline-login">Log in</a>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

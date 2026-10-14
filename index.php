@@ -5,7 +5,7 @@ session_start();
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
 
-// حساب عدد المنتجات في السلة لعرضها بجانب أيقونة Cart
+// حساب عدد المنتجات في السلة
 $cart_count = 0;
 if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
     foreach ($_SESSION['cart'] as $item) {
@@ -108,11 +108,6 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
             color: inherit;
         }
 
-        .product-link:hover h5 {
-            color: var(--brand-green);
-            text-decoration: underline;
-        }
-
         .btn-bloom {
             background-color: var(--brand-green);
             color: #ffffff;
@@ -126,40 +121,6 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
             color: #ffffff;
         }
 
-        .site-footer {
-            background-color: var(--brand-green);
-            color: #FAF8F5;
-            padding: 50px 0 20px 0;
-            margin-top: auto;
-        }
-
-        .site-footer h6 {
-            font-weight: 700;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-        }
-
-        .site-footer ul {
-            padding-left: 0;
-            list-style: none;
-        }
-
-        .site-footer ul li {
-            margin-bottom: 8px;
-        }
-
-        .site-footer ul li a {
-            color: #d1d8d3;
-            text-decoration: none;
-            font-size: 0.85rem;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            padding-top: 20px;
-            margin-top: 30px;
-            font-size: 0.8rem;
-            color: #b5c2bc;
         }
     </style>
 </head>
@@ -205,20 +166,19 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
         </nav>
     </header>
 
-    <!-- عرض صورة البنر الأساسية -->
+    <!-- البنر الترحيبي -->
     <section class="py-4 text-center">
         <div class="container">
             <div class="banner-container">
                 <img src="banner" alt="Welcome to Bloom" class="banner-img" onerror="this.src='banner.jpeg';">
             </div>
-            
             <p class="text-secondary small mt-3 mx-auto" style="max-width: 650px;">
                 Discover your perfect green companion. Explore our curated collection of indoor plants, gardening essentials, and smart care tools.
             </p>
         </div>
     </section>
 
-    <!-- عرض المنتجات -->
+    <!-- عرض المنتجات من قاعدة البيانات -->
     <main class="container my-4">
         <h2 class="brand-title-font mb-4">Plant Store</h2>
         <div class="row g-4">
@@ -230,12 +190,9 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
                                 <img src="<?php echo htmlspecialchars($row['image']); ?>" alt="Plant" class="product-img">
                                 <h5 class="brand-title-font fs-5 mb-2 text-dark"><?php echo htmlspecialchars($row['title']); ?></h5>
                             </a>
-                            
                             <p class="text-muted small mb-3 flex-grow-1" style="min-height: 40px;"><?php echo htmlspecialchars($row['description']); ?></p>
-                            
                             <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
                                 <span class="fw-bold text-success fs-5"><?php echo number_format($row['price'], 2); ?> SAR</span>
-                                
                                 <form action="cart.php" method="POST" class="m-0">
                                     <input type="hidden" name="product_id" value="<?php echo $row['product_id']; ?>">
                                     <button type="submit" class="btn btn-bloom btn-sm px-3">Add to Cart</button>
@@ -254,64 +211,12 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 
     <!-- الفوتر -->
     <footer class="site-footer">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <h6>STAY IN THE LOOP</h6>
-                    <p class="small text-light opacity-75 mb-3">Stay in the loop with special offers, plant-parenting tips, and more.</p>
-                    <form class="input-group input-group-sm mb-3">
-                        <input type="email" class="form-control bg-transparent text-white border-light" placeholder="Enter your email">
-                        <button class="btn btn-light text-success fw-bold px-3" type="button">SUBSCRIBE</button>
-                    </form>
-                </div>
-
-                <div class="col-lg-2 col-md-3 col-6">
-                    <h6>COMPANY</h6>
-                    <ul>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Reviews</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">Our Guarantee</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-lg-3 col-md-3 col-6">
-                    <h6>SUPPORT</h6>
-                    <ul>
-                        <li><a href="advisor.php">Plant Advisor</a></li>
-                        <li><a href="#">Shipping & Returns</a></li>
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-lg-3 col-md-12">
-                    <h6>PLANT QUESTIONS?</h6>
-                    <ul>
-                        <li><a href="advisor.php">Plant Care Tips</a></li>
-                        <li><a href="#">Plant Life Blog</a></li>
-                        <li><a href="advisor.php">Contact the Grow-How® Team</a></li>
-                    </ul>
-                    <div class="d-flex gap-3 mt-3 fs-5">
-                        <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-white"><i class="bi bi-tiktok"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center">
-                <p class="mb-0">&copy; <?php echo date("Y"); ?> Bloom Store. All rights reserved.</p>
-                <div class="d-flex gap-3 small">
-                    <a href="#" class="text-light text-decoration-none">Terms</a>
-                    <a href="#" class="text-light text-decoration-none">Privacy Policy</a>
-                    <a href="#" class="text-light text-decoration-none">Cookie Preferences</a>
-                </div>
-            </div>
+        <div class="container text-center">
+    
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<?php include 'footer.php'; ?>
 </html>

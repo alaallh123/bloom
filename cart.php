@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $_SESSION['cart'][$index]['quantity']--;
             }
         }
-        // حذف المنتج
+        // حذف المنتج فوراً بدون تأكيد المتصفح المزعج
         elseif ($_POST['action'] === 'remove') {
             unset($_SESSION['cart'][$index]);
             $_SESSION['cart'] = array_values($_SESSION['cart']);
@@ -133,6 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && !iss
             font-size: 1.1rem;
             transition: opacity 0.2s;
             padding: 0;
+            cursor: pointer;
         }
 
         .btn-remove:hover {
@@ -230,8 +231,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && !iss
                                         <?php echo number_format($subtotal, 2); ?> SAR
                                     </td>
                                     <td class="py-3 text-center">
-                                        <!-- حذف المنتج -->
-                                        <form action="cart.php" method="POST" onsubmit="return confirm('Are you sure you want to remove this item?');">
+                                        <!-- حذف المنتج مباشرة بدون رسالة المتصفح المنبثقة -->
+                                        <form action="cart.php" method="POST" class="m-0">
                                             <input type="hidden" name="action" value="remove">
                                             <input type="hidden" name="cart_index" value="<?php echo $index; ?>">
                                             <button type="submit" class="btn-remove" title="Remove Item">
