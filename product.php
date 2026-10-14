@@ -194,7 +194,7 @@ if ($result && $result->num_rows > 0) {
         </div>
     </header>
 
-    <!-- 3. شريط التصفح الفرعي (يحتوي على Home فقط) -->
+    <!-- 3. شريط التصفح الفرعي -->
     <div class="sub-nav">
         <div class="container">
             <div class="d-flex py-1">
@@ -213,7 +213,7 @@ if ($result && $result->num_rows > 0) {
 
             <!-- صورة المنتج -->
             <div class="mb-4 text-center">
-                <?php if (!empty($product['image']) && file_exists($product['image'])): ?>
+                <?php if (!empty($product['image'])): ?>
                     <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>" class="product-main-img">
                 <?php else: ?>
                     <div class="p-5 bg-light text-center border rounded text-muted">No Image Available</div>

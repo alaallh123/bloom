@@ -24,6 +24,7 @@ foreach ($possible_banners as $bname) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     
     <style>
         :root {
@@ -176,11 +177,80 @@ foreach ($possible_banners as $bname) {
             font-weight: 700;
             font-size: 1.3rem;
         }
+
+        /* --- Bloom Footer Styling --- */
+        .newsletter-section {
+            background-color: #F4EFEA;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .bloom-footer {
+            background-color: var(--brand-green);
+            color: #FAF8F5;
+            padding: 60px 0 30px 0;
+        }
+
+        .bloom-footer h6 {
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #C2D1C5;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .bloom-footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bloom-footer ul li {
+            margin-bottom: 12px;
+        }
+
+        .bloom-footer ul li a {
+            color: #FAF8F5;
+            text-decoration: none;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .bloom-footer ul li a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .footer-bottom-links a {
+            color: #C2D1C5;
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .footer-bottom-links a:hover {
+            color: #ffffff;
+        }
+
+        .social-icon-link {
+            color: #FAF8F5;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .social-icon-link:hover {
+            opacity: 0.7;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
 
     <div class="page-wrapper">
+        <!-- الشريط العلوي -->
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand-custom" href="index.php">
@@ -197,12 +267,13 @@ foreach ($possible_banners as $bname) {
                         <li class="nav-item"><a class="nav-link active" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="#products">Shop Plants</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Care Guides</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Sign In</a></li>
+                        <li class="nav-item"><a class="nav-link" href="login.php">Sign In</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
 
+        <!-- الهيرو وسلايدر الشعار -->
         <div class="container hero-section">
             <img src="<?php echo $banner_file; ?>" alt="Welcome to Bloom" class="bloom-banner-img">
             <div class="main-divider"></div>
@@ -213,6 +284,7 @@ foreach ($possible_banners as $bname) {
 
         <div class="site-divider"></div>
 
+        <!-- قسم المنتجات الديناميكي -->
         <div class="container my-5 pb-5" id="products">
             <div class="d-flex justify-content-between align-items-center mb-5 pt-2">
                 <h3 class="brand-title-font m-0 fs-3">Featured Plants & Accessories</h3>
@@ -226,13 +298,9 @@ foreach ($possible_banners as $bname) {
                 ?>
                     <div class="col-md-4">
                         <div class="card product-card h-100 p-3">
-                            <?php if (!empty($product['image']) && file_exists($product['image'])): ?>
-                                <a href="product.php?id=<?php echo $product['product_id']; ?>">
-                                    <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>" class="product-thumb rounded">
-                                </a>
-                            <?php else: ?>
-                                <div class="product-thumb d-flex align-items-center justify-content-center text-muted small rounded">No Image</div>
-                            <?php endif; ?>
+                            <a href="product.php?id=<?php echo $product['product_id']; ?>">
+                                <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>" class="product-thumb rounded">
+                            </a>
 
                             <div class="card-body d-flex flex-column justify-content-between px-2 pt-3 pb-2">
                                 <div>
@@ -250,7 +318,6 @@ foreach ($possible_banners as $bname) {
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <span class="price-tag"><?php echo number_format($product['price'], 2); ?> SAR</span>
                                     </div>
-                                    <!-- زر Shop Now عريض مثل موقع صديقتك -->
                                     <a href="product.php?id=<?php echo $product['product_id']; ?>" class="btn btn-bloom w-100 py-2">Shop Now</a>
                                 </div>
                             </div>
@@ -265,7 +332,96 @@ foreach ($possible_banners as $bname) {
             </div>
         </div>
 
-        <div class="site-divider mt-auto"></div>
+        <!-- قسم الاشتراك في النشرة البريدية (Newsletter) -->
+        <section class="newsletter-section">
+            <div class="container" style="max-width: 600px;">
+                <h2 class="brand-title-font fs-2 mb-3">Join the plant family</h2>
+                <p class="text-secondary mb-4">
+                    Get 10% off your first order, plus seasonal care tips, new arrivals, and exclusive offers delivered to your inbox.
+                </p>
+                <form class="d-flex flex-column gap-2">
+                    <input type="email" class="form-control form-control-lg text-center fs-6" placeholder="Enter your email" required style="border-radius: 30px; padding: 14px;">
+                    <button type="submit" class="btn btn-bloom py-3 fs-6 mt-1" style="border-radius: 30px;">SUBSCRIBE &rarr;</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- الفوتر الرئيسي (Footer) -->
+        <footer class="bloom-footer">
+            <div class="container">
+                <div class="row g-4 mb-5">
+                    
+                    <!-- Stay in the loop -->
+                    <div class="col-md-3">
+                        <h6>STAY IN THE LOOP</h6>
+                        <p class="small text-light opacity-75 mb-3">Stay in the loop with special offers, plant-parenting tips, and more.</p>
+                        <div class="input-group">
+                            <input type="email" class="form-control form-control-sm bg-transparent text-white border-secondary" placeholder="Your email">
+                            <button class="btn btn-light btn-sm text-dark px-3 fw-bold" type="button">SUBSCRIBE</button>
+                        </div>
+                    </div>
+
+                    <!-- Company -->
+                    <div class="col-md-3">
+                        <h6>COMPANY</h6>
+                        <ul>
+                            <li><a href="#">About</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Reviews</a></li>
+                            <li><a href="#">Press</a></li>
+                            <li><a href="#">Our Guarantee</a></li>
+                            <li><a href="#">Corporate Gifting</a></li>
+                            <li><a href="#">Trade Program</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Support -->
+                    <div class="col-md-3">
+                        <h6>SUPPORT</h6>
+                        <ul>
+                            <li><a href="#">Help + FAQs</a></li>
+                            <li><a href="#">Track Your Order</a></li>
+                            <li><a href="#">Shipping</a></li>
+                            <li><a href="#">Returns</a></li>
+                            <li><a href="#">Contact Support</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Plant Questions -->
+                    <div class="col-md-3">
+                        <h6>PLANT QUESTIONS?</h6>
+                        <ul>
+                            <li><a href="#">Plant Care Tips</a></li>
+                            <li><a href="#">Plant Life Blog</a></li>
+                            <li><a href="#">Contact the Grow-How® Team</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <hr style="border-color: rgba(255,255,255,0.15);">
+
+                <!-- الحقوق وروابط الخصوصية والأيقونات الاجتماعية -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 gap-3">
+                    <div class="footer-bottom-links">
+                        <a href="#">Terms</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Do Not Sell My Information</a>
+                        <a href="#">Accessibility</a>
+                        <a href="#">Cookie Preferences</a>
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <a href="#" class="social-icon-link"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-icon-link"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-icon-link"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="social-icon-link"><i class="bi bi-pinterest"></i></a>
+                        <a href="#" class="social-icon-link"><i class="bi bi-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
