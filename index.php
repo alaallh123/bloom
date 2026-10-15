@@ -369,15 +369,16 @@ if ($featured_res && $featured_res->num_rows > 0) {
                     <!-- 6. Smart Plant Advisor -->
                     <li class="nav-item">
                         <a class="nav-link nav-link-custom fw-bold text-warning" href="advisor.php">
-                            <i class="bi bi-robot"></i> AI Advisor
+                            <i class="bi bi-robot"></i> Plant Advisor
                         </a>
                     </li>
 
                 </ul>
             </div>
 
-            <!-- Navbar Action Icons -->
+            <!-- Navbar Action Icons & Admin Add Product Button -->
             <div class="d-flex align-items-center">
+              <a href="add_product.php" class="btn btn-outline-light btn-sm me-2 fw-semibold" title="Add New Product"><i class="bi bi-plus-lg me-1"></i> Add Product</a>
                 <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
                 <a href="login.php" class="nav-icon" title="Login / Register"><i class="bi bi-person"></i></a>
                 <a href="cart.php" class="nav-icon position-relative">
