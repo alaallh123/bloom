@@ -2,253 +2,261 @@
 include 'db.php';
 session_start();
 
-$product_id = isset($_GET['id']) ? intval($_GET['id']) : 1;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 4;
 
-$sql = "SELECT * FROM products WHERE product_id = $product_id";
-$result = $conn->query($sql);
-$product = $result->fetch_assoc();
-
-// حساب عدد المنتجات في السلة
-$cart_count = 0;
-if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-    foreach ($_SESSION['cart'] as $item) {
-        $cart_count += isset($item['quantity']) ? intval($item['quantity']) : 1;
-    }
-}
+$product = [
+    'title' => "Spider Plant",
+    'price' => 69.00,
+    'description' => "The Spider Plant is one of the most well-known houseplants for a good reason. They are easy to care for and adaptable to almost any spot in your home.",
+    'image' => "spider.jpeg"
+];
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($product['title'] ?? 'Product Details'); ?> | Bloom</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title><?php echo htmlspecialchars($product['title']); ?> | Bloom</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --brand-bg: #FAF8F5; 
-            --brand-green: #3B5343; 
-            --brand-divider: #E7E0D6; 
-            --brand-text: #2f3e35;
-        }
-
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--brand-bg);
-            color: var(--brand-text);
+            background-color: #3B5343; /* خلفية الصفحة خضراء متناسقة بالكامل */
+            color: #2C3F32;
             margin: 0;
             padding: 0;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: #2C3F32;
+            padding: 15px 30px;
             display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .main-header {
-            background-color: var(--brand-green);
-            padding: 12px 0;
+        .top-bar a {
+            color: #FAF8F5;
+            text-decoration: none;
+            font-weight: 500;
+            margin-right: 20px;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .navbar-brand-custom {
+        .top-bar a:hover {
+            opacity: 0.8;
+        }
+
+        /* Container */
+        .main-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .product-card-view {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #EAE5DD;
+            margin-bottom: 30px;
+        }
+
+        .product-img-box {
+            background-color: #F8F5F0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .product-img-box img {
+            max-width: 100%;
+            height: 320px;
+            object-fit: contain;
+        }
+
+        .product-title {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
             font-weight: 700;
-            color: #FAF8F5 !important;
-            text-decoration: none;
+            color: #2C3F32;
+            margin-bottom: 5px;
         }
 
-        .brand-title-font {
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
-            color: var(--brand-green);
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3B5343;
+            margin-bottom: 20px;
         }
 
-        .product-container {
-            max-width: 750px;
-            margin: 0 auto;
-        }
-
-        .product-img-main {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--brand-divider);
-            display: block;
-            margin: 0 auto;
-        }
-
-        .option-group-title {
+        .section-label {
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--brand-text);
-            margin-bottom: 8px;
-            margin-top: 15px;
+            color: #2C3F32;
+            margin-bottom: 10px;
         }
 
         .option-box {
-            display: block;
-            background: #ffffff;
-            border: 1px solid var(--brand-divider);
-            border-radius: 6px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
             padding: 10px 15px;
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .option-box input[type="radio"] {
-            margin-right: 10px;
+            transition: border-color 0.2s;
         }
 
         .option-box:hover {
-            border-color: var(--brand-green);
-            background-color: #f7f9f7;
+            border-color: #3B5343;
         }
 
-        .btn-bloom {
-            background-color: var(--brand-green);
-            color: #ffffff;
-            border-radius: 8px;
-            font-weight: 500;
-            border: none;
+        .option-box input {
+            margin-right: 12px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .quantity-control button {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #CBD5E0;
+            background: #fff;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .quantity-control input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #CBD5E0;
+            border-radius: 6px;
+            padding: 6px;
+        }
+
+        /* زر Add to cart باللون الأخضر الفاخر */
+        .btn-cart {
+            background-color: #3B5343 !important;
+            color: #fff !important;
+            border-radius: 10px;
             padding: 12px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            transition: background 0.2s;
         }
 
-        .btn-bloom:hover {
-            background-color: #2c3f32;
-            color: #ffffff;
-        }
-
-        .site-footer {
-            background-color: var(--brand-green);
-            color: #FAF8F5;
-            padding: 40px 0 20px 0;
-            margin-top: auto;
+        .btn-cart:hover {
+            background-color: #2C3F32 !important;
+            color: #fff !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر مع عداد السلة -->
-    <header class="main-header sticky-top">
-        <nav class="navbar navbar-expand-lg navbar-dark p-0">
-            <div class="container">
-                <a class="navbar-brand-custom" href="index.php">Bloom</a>
-                <div class="collapse navbar-collapse show">
-                    <ul class="navbar-nav ms-auto align-items-center gap-3">
-                        <li class="nav-item"><a class="nav-link text-white" href="index.php">Home</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="advisor.php">Plant Advisor</a></li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white position-relative" href="cart.php">
-                                <i class="bi bi-bag"></i> Cart
-                                <?php if ($cart_count > 0): ?>
-                                    <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-                                        <?php echo $cart_count; ?>
-                                    </span>
-                                <?php endif; ?>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- المحتوى -->
-    <main class="container my-5">
-        <?php if ($product): ?>
-            <div class="product-container">
-                
-                <!-- 1. صورة النبتة في الأعلى -->
-                <div class="mb-4 text-center">
-                    <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="Plant" class="product-img-main">
-                </div>
-
-                <!-- 2. وصف النبتة تحت الصورة مباشرة -->
-                <div class="mb-4 p-4 rounded-3" style="background-color: #ffffff; border: 1px solid var(--brand-divider);">
-                    <h4 class="brand-title-font fs-5 mb-2">Description</h4>
-                    <p class="text-muted small m-0" style="line-height: 1.6;"><?php echo htmlspecialchars($product['description']); ?></p>
-                </div>
-
-                <!-- 3. تفاصيل المنتج والخيارات والكمية وزر الإضافة -->
-                <div class="p-4 rounded-3 bg-white border">
-                    <h2 class="brand-title-font fs-4 mb-1"><?php echo htmlspecialchars($product['title']); ?></h2>
-                    <h3 class="text-success fw-bold mb-4 fs-5"><?php echo number_format($product['price'], 2); ?> SAR</h3>
-
-                    <form action="cart.php" method="POST">
-                        <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
-
-                        <!-- المقاس Size -->
-                        <div class="option-group-title">Size</div>
-                        <label class="option-box">
-                            <input type="radio" name="size" value="3"> 3" Pot
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="size" value="4" checked> 4" Pot
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="size" value="6"> 6" Pot
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="size" value="8"> 8" Pot
-                        </label>
-
-                        <!-- الأصيص Pot -->
-                        <div class="option-group-title">Pot</div>
-                        <label class="option-box">
-                            <input type="radio" name="pot" value="Nursery" checked> Nursery Pot
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="pot" value="Black Cylinder"> Black Cylinder
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="pot" value="White Cylinder"> White Cylinder
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="pot" value="Terra Cotta"> Terra Cotta Eco Pot
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="pot" value="Black Eco"> Black Eco Pot
-                        </label>
-                        <label class="option-box">
-                            <input type="radio" name="pot" value="Cow Pot"> Cow Pot
-                        </label>
-
-                        <!-- الكمية -->
-                        <div class="option-group-title">Quantity</div>
-                        <div class="input-group mb-4" style="width: 140px;">
-                            <button class="btn btn-outline-secondary px-2" type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">-</button>
-                            <input type="number" name="quantity" class="form-control text-center" value="0" min="0">
-                            <button class="btn btn-outline-secondary px-2" type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">+</button>
-                        </div>
-
-                        <!-- زر الإضافة -->
-                        <button type="submit" class="btn btn-bloom w-100">Add to cart</button>
-                    </form>
-                </div>
-
-            </div>
-        <?php else: ?>
-            <div class="text-center py-5">
-                <p class="text-muted">Product not found.</p>
-            </div>
-        <?php endif; ?>
-    </main>
-
-    <!-- الفوتر -->
-    <footer class="site-footer">
-        <div class="container text-center">
-            <p class="mb-0 text-light opacity-75 small">&copy; <?php echo date("Y"); ?> Bloom Store. All rights reserved.</p>
+    <!-- Top Bar with Robot Icon Next to Plant Advisor -->
+    <div class="top-bar">
+        <div>
+            <a href="index.php">Home</a>
+            <a href="advisor.php"><i class="bi bi-robot"></i> Plant Advisor</a>
         </div>
-    </footer>
+        <div>
+            <a href="cart.php"><i class="bi bi-bag"></i> Cart</a>
+        </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="main-container">
+        
+        <!-- Top Section: Image Only -->
+        <div class="product-card-view">
+            <div class="product-img-box">
+                <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="Product Image" onerror="this.src='spider.jpeg';">
+            </div>
+        </div>
+
+        <!-- Description Section -->
+        <div class="product-card-view">
+            <h5 class="fw-bold mb-2">Description</h5>
+            <p class="text-muted small mb-0"><?php echo htmlspecialchars($product['description']); ?></p>
+        </div>
+
+        <!-- Product Details, Options & Cart Section -->
+        <div class="product-card-view">
+            <h1 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h1>
+            <div class="product-price"><?php echo number_format($product['price'], 2); ?> SAR</div>
+            
+            <form action="cart.php" method="POST">
+                <input type="hidden" name="product_id" value="<?php echo $id; ?>">
+
+                <!-- Size Options -->
+                <div class="mb-4">
+                    <div class="section-label">Size</div>
+                    <label class="option-box">
+                        <input type="radio" name="size" value="3"> 3" Pot
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="size" value="4" checked> 4" Pot
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="size" value="6"> 6" Pot
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="size" value="8"> 8" Pot
+                    </label>
+                </div>
+
+                <!-- Pot Options -->
+                <div class="mb-4">
+                    <div class="section-label">Pot</div>
+                    <label class="option-box">
+                        <input type="radio" name="pot" value="nursery" checked> Nursery Pot
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="pot" value="black_cylinder"> Black Cylinder
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="pot" value="white_cylinder"> White Cylinder
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="pot" value="terra_cotta"> Terra Cotta Eco Pot
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="pot" value="black_eco"> Black Eco Pot
+                    </label>
+                    <label class="option-box">
+                        <input type="radio" name="pot" value="cow_pot"> Cow Pot
+                    </label>
+                </div>
+
+                <!-- Quantity -->
+                <div class="mb-4">
+                    <div class="section-label">Quantity</div>
+                    <div class="quantity-control">
+                        <button type="button">-</button>
+                        <input type="text" name="quantity" value="1">
+                        <button type="button">+</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-cart">Add to cart</button>
+            </form>
+        </div>
+
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
