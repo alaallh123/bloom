@@ -6,9 +6,9 @@ session_start();
 
 // 1. معالجة تعديل الكمية أو حذف المنتج
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $index = intval($_POST['cart_index']);
+    $index = isset($_POST['cart_index']) ? intval($_POST['cart_index']) : -1;
 
-    if (isset($_SESSION['cart'][$index])) {
+    if ($index >= 0 && isset($_SESSION['cart'][$index])) {
         // زيادة الكمية (+)
         if ($_POST['action'] === 'increase') {
             $_SESSION['cart'][$index]['quantity']++;
@@ -19,10 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $_SESSION['cart'][$index]['quantity']--;
             }
         }
-        // حذف المنتج فوراً بدون تأكيد المتصفح المزعج
+        // حذف المنتج فوراً
         elseif ($_POST['action'] === 'remove') {
             unset($_SESSION['cart'][$index]);
-            $_SESSION['cart'] = array_values($_SESSION['cart']);
+            $_SESSION['cart'] = array_values($_SESSION['cart']); // إعادة ترتيب العناصر
         }
     }
 
@@ -31,20 +31,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // 2. إضافة المنتج للسلة إذا تم الضغط على Add to cart من صفحة المنتج
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && !isset($_POST['action'])) {
-    $product_id = intval($_POST['product_id']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['product_id']) || isset($_POST['id'])) && !isset($_POST['action'])) {
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : intval($_POST['id']);
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
     $size = isset($_POST['selected_size']) ? $_POST['selected_size'] : '';
     $pot = isset($_POST['selected_pot']) ? $_POST['selected_pot'] : '';
 
-    $cart_item = [
-        'product_id' => $product_id,
-        'quantity' => $quantity,
-        'size' => $size,
-        'pot' => $pot
-    ];
-    
-    $_SESSION['cart'][] = $cart_item;
+    if ($product_id > 0) {
+        $cart_item = [
+            'product_id' => $product_id,
+            'id' => $product_id,
+            'quantity' => $quantity,
+            'size' => $size,
+            'pot' => $pot
+        ];
+        $_SESSION['cart'][] = $cart_item;
+    }
+
     header("Location: cart.php");
     exit();
 }
@@ -171,7 +174,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && !iss
     <div class="container my-5" style="max-width: 850px;">
         <h2 class="brand-title-font mb-4">Your Shopping Cart</h2>
 
-        <?php if (!empty($_SESSION['cart'])): ?>
+        <?php 
+        $valid_items = [];
+        $total_price = 0;
+
+        if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+            foreach ($_SESSION['cart'] as $index => $item) {
+                $pid = 0;
+                if (is_array($item)) {
+                    $pid = isset($item['product_id']) ? intval($item['product_id']) : (isset($item['id']) ? intval($item['id']) : 0);
+                } else {
+                    $pid = intval($item);
+                }
+
+                if ($pid > 0) {
+                    $query = "SELECT * FROM products WHERE product_id = $pid LIMIT 1";
+                    $res = $conn->query($query);
+                    if ($res && $res->num_rows > 0) {
+                        $prod = $res->fetch_assoc();
+                        $qty = is_array($item) && isset($item['quantity']) ? intval($item['quantity']) : 1;
+                        $subtotal = floatval($prod['price']) * $qty;
+                        $total_price += $subtotal;
+
+                        $valid_items[] = [
+                            'index' => $index,
+                            'prod' => $prod,
+                            'qty' => $qty,
+                            'size' => is_array($item) && isset($item['size']) ? $item['size'] : '',
+                            'pot' => is_array($item) && isset($item['pot']) ? $item['pot'] : '',
+                            'subtotal' => $subtotal
+                        ];
+                    }
+                }
+            }
+        }
+        ?>
+
+        <?php if (!empty($valid_items)): ?>
             <div class="card border-0 shadow-sm p-4 mb-4" style="background-color: #ffffff; border-radius: 12px;">
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
@@ -185,66 +224,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && !iss
                             </tr>
                         </thead>
                         <tbody>
-                            <?php 
-                            $total_price = 0;
-                            foreach ($_SESSION['cart'] as $index => $item):
-                                $pid = $item['product_id'];
-                                $query = "SELECT * FROM products WHERE product_id = $pid";
-                                $res = $conn->query($query);
-                                if ($res && $res->num_rows > 0) {
-                                    $prod = $res->fetch_assoc();
-                                    $subtotal = $prod['price'] * $item['quantity'];
-                                    $total_price += $subtotal;
-                            ?>
+                            <?php foreach ($valid_items as $v_item): ?>
                                 <tr class="border-bottom">
                                     <td class="py-3">
                                         <div class="d-flex align-items-center gap-3">
-                                            <img src="<?php echo htmlspecialchars($prod['image']); ?>" alt="" class="cart-item-img">
+                                            <img src="<?php echo htmlspecialchars($v_item['prod']['image']); ?>" alt="" class="cart-item-img">
                                             <div>
-                                                <h6 class="mb-0 fw-bold text-dark"><?php echo htmlspecialchars($prod['title']); ?></h6>
+                                                <h6 class="mb-0 fw-bold text-dark"><?php echo htmlspecialchars($v_item['prod']['title']); ?></h6>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="py-3 text-secondary small">
-                                        <div><strong>Size:</strong> <?php echo htmlspecialchars($item['size']); ?></div>
-                                        <div><strong>Pot:</strong> <?php echo htmlspecialchars($item['pot']); ?></div>
+                                        <?php if (!empty($v_item['size'])): ?>
+                                            <div><strong>Size:</strong> <?php echo htmlspecialchars($v_item['size']); ?></div>
+                                        <?php endif; ?>
+                                        <?php if (!empty($v_item['pot'])): ?>
+                                            <div><strong>Pot:</strong> <?php echo htmlspecialchars($v_item['pot']); ?></div>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="py-3 text-center">
                                         <!-- زيادة ونقصان الكمية -->
                                         <div class="d-flex align-items-center justify-content-center gap-2">
                                             <form action="cart.php" method="POST" class="d-inline">
                                                 <input type="hidden" name="action" value="decrease">
-                                                <input type="hidden" name="cart_index" value="<?php echo $index; ?>">
+                                                <input type="hidden" name="cart_index" value="<?php echo $v_item['index']; ?>">
                                                 <button type="submit" class="qty-btn">-</button>
                                             </form>
 
-                                            <span class="fw-bold px-2"><?php echo $item['quantity']; ?></span>
+                                            <span class="fw-bold px-2"><?php echo $v_item['qty']; ?></span>
 
                                             <form action="cart.php" method="POST" class="d-inline">
                                                 <input type="hidden" name="action" value="increase">
-                                                <input type="hidden" name="cart_index" value="<?php echo $index; ?>">
+                                                <input type="hidden" name="cart_index" value="<?php echo $v_item['index']; ?>">
                                                 <button type="submit" class="qty-btn">+</button>
                                             </form>
                                         </div>
                                     </td>
                                     <td class="py-3 text-end fw-bold text-success">
-                                        <?php echo number_format($subtotal, 2); ?> SAR
+                                        <?php echo number_format($v_item['subtotal'], 2); ?> SAR
                                     </td>
                                     <td class="py-3 text-center">
-                                        <!-- حذف المنتج مباشرة بدون رسالة المتصفح المنبثقة -->
+                                        <!-- حذف المنتج -->
                                         <form action="cart.php" method="POST" class="m-0">
                                             <input type="hidden" name="action" value="remove">
-                                            <input type="hidden" name="cart_index" value="<?php echo $index; ?>">
+                                            <input type="hidden" name="cart_index" value="<?php echo $v_item['index']; ?>">
                                             <button type="submit" class="btn-remove" title="Remove Item">
                                                 <i class="bi bi-trash3-fill"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
-                            <?php 
-                                }
-                            endforeach; 
-                            ?>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

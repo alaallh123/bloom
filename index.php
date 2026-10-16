@@ -49,13 +49,13 @@ if ($featured_res && $featured_res->num_rows > 0) {
         /* Green Main Navbar */
         .navbar-bloom {
             background-color: var(--brand-green) !important;
-            padding: 12px 0;
+            padding: 12px 15px;
             border-bottom: 1px solid #2C3F32;
         }
 
         .navbar-brand-custom {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
             color: #FAF8F5 !important;
             text-decoration: none;
@@ -63,20 +63,16 @@ if ($featured_res && $featured_res->num_rows > 0) {
             line-height: 1;
         }
 
-        .navbar-nav {
-            align-items: center;
-        }
-
         .nav-link-custom {
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: #FAF8F5 !important;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 8px 12px !important;
+            letter-spacing: 0.3px;
+            padding: 6px 8px !important;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 3px;
             white-space: nowrap;
             transition: opacity 0.2s;
         }
@@ -107,9 +103,9 @@ if ($featured_res && $featured_res->num_rows > 0) {
         }
 
         .nav-icon {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #FAF8F5;
-            margin-left: 16px;
+            margin-left: 10px;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -290,101 +286,114 @@ if ($featured_res && $featured_res->num_rows > 0) {
 
     <!-- Main Navigation Bar (Green Background) -->
     <nav class="navbar navbar-expand-lg navbar-bloom sticky-top">
-        <div class="container d-flex align-items-center justify-content-between">
+        <div class="container-fluid px-3">
             <a class="navbar-brand navbar-brand-custom m-0" href="index.php">Bloom</a>
 
             <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#bloomNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse justify-content-center" id="bloomNavbar">
-                <ul class="navbar-nav d-flex align-items-center">
+            <div class="collapse navbar-collapse justify-content-between" id="bloomNavbar">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center">
                     
-                    <!-- 1. Plants Department -->
+                    <!-- 1. Plants -->
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="plantsDrop" role="button" data-bs-toggle="dropdown">
                             Plants
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="plantsDrop">
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=indoor">Indoor Plants</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=outdoor">Outdoor Plants</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=succulents">Succulents & Cacti</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=flowering">Flowering Plants</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=aromatic">Aromatic Plants</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=indoor">Indoor plants</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=outdoor">Outdoor plants</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=cacti_succulents">Cacti and succulents</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=flowering">Flowering plants</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=aromatic">Aromatic plants</a></li>
                         </ul>
                     </li>
 
-                    <!-- 2. Fertilizers Department -->
+                    <!-- 2. Fertilizers -->
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="fertilizersDrop" role="button" data-bs-toggle="dropdown">
                             Fertilizers
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="fertilizersDrop">
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=organic_fert">Organic Fertilizers</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=liquid_fert">Liquid Fertilizers</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=granular_fert">Granular Fertilizers</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=plant_food">Plant Food Nutrients</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=organic_fert">Organic fertilizers</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=liquid_fert">Liquid fertilizers</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=granular_fert">Granular fertilizers</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=plant_nutrients">Plant nutrients</a></li>
                         </ul>
                     </li>
 
-                    <!-- 3. Pots & Planters Department -->
+                    <!-- 3. Pots & Planters -->
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="potsDrop" role="button" data-bs-toggle="dropdown">
                             Pots & Planters
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="potsDrop">
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=indoor_pots">Indoor Pots</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=outdoor_pots">Outdoor Pots</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=hanging_pots">Hanging Planters</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=self_watering">Self-Watering Pots</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=indoor_pots">Indoor pots</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=outdoor_pots">Outdoor pots</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=hanging_pots">Hanging pots</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=self_watering">Self-watering pots</a></li>
                         </ul>
                     </li>
 
-                    <!-- 4. Soil & Growing Supplies Department -->
+                    <!-- 4. Gardening Tools -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="toolsDrop" role="button" data-bs-toggle="dropdown">
+                            Gardening Tools
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="toolsDrop">
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=digging_tools">Digging and planting tools</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=pruning_tools">Pruning tools</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=watering_spraying">Watering and spraying tools</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=gardening_gloves">Gardening gloves</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- 5. Soil & Growing Supplies -->
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="soilDrop" role="button" data-bs-toggle="dropdown">
                             Soil & Supplies
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="soilDrop">
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=potting_soil">Potting Soil</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=perlite_peat">Perlite & Peat Moss</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=decorative_stones">Decorative Stones</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=repotting_tools">Repotting Tools</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=potting_soil">Potting soil</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=perlite_peat">Perlite and peat moss</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=decorative_stones">Decorative stones</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=repotting_supplies">Plant repotting and planting supplies</a></li>
                         </ul>
                     </li>
 
-                    <!-- 5. Plant Care Department -->
+                    <!-- 6. Plant Care -->
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="careDrop" role="button" data-bs-toggle="dropdown">
                             Plant Care
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="careDrop">
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=watering_tools">Watering Tools</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=misters">Misters & Sprayers</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=pest_control">Pest Control</a></li>
-                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=leaf_shine">Leaf Care Products</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=watering_monitoring">Watering monitoring tools</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=plant_sprayers">Plant sprayers</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=pest_control">Pest control supplies</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" href="products.php?category=leaf_care">Leaf care products</a></li>
                         </ul>
                     </li>
 
-                    <!-- 6. Smart Plant Advisor -->
+                    <!-- Smart Plant Advisor -->
                     <li class="nav-item">
                         <a class="nav-link nav-link-custom fw-bold text-warning" href="advisor.php">
-                            <i class="bi bi-robot"></i> Plant Advisor
+                            <i class="bi bi-robot"></i> Advisor
                         </a>
                     </li>
 
                 </ul>
-            </div>
 
-            <!-- Navbar Action Icons & Admin Add Product Button -->
-            <div class="d-flex align-items-center">
-              <a href="add_product.php" class="btn btn-outline-light btn-sm me-2 fw-semibold" title="Add New Product"><i class="bi bi-plus-lg me-1"></i> Add Product</a>
-                <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
-                <a href="login.php" class="nav-icon" title="Login / Register"><i class="bi bi-person"></i></a>
-                <a href="cart.php" class="nav-icon position-relative">
-                    <i class="bi bi-bag"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark" style="font-size: 0.65rem;">0</span>
-                </a>
+                <!-- Navbar Action Icons & Admin Add Product Button -->
+                <div class="d-flex align-items-center">
+                    <a href="add_product.php" class="btn btn-outline-light btn-sm me-2 fw-semibold text-nowrap" title="Add New Product"><i class="bi bi-plus-lg me-1"></i> Add Product</a>
+                    <a href="#" class="nav-icon" title="Search"><i class="bi bi-search"></i></a>
+                    <a href="login.php" class="nav-icon" title="Login / Register"><i class="bi bi-person"></i></a>
+                    <a href="cart.php" class="nav-icon position-relative" title="Cart">
+                        <i class="bi bi-bag"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark" style="font-size: 0.6rem;">0</span>
+                    </a>
+                </div>
             </div>
 
         </div>

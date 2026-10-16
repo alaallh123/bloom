@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--brand-bg);
+            background-color: var(--brand-green);
             color: var(--brand-text);
             margin: 0;
             padding: 0;
@@ -59,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .main-header {
             background-color: var(--brand-green);
             padding: 12px 0;
+            border-bottom: 1px solid #ffffff;
         }
 
         .navbar-brand-custom {
@@ -73,6 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
             color: var(--brand-green);
+        }
+
+        .checkout-main-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #FAF8F5;
         }
 
         .btn-bloom {
@@ -96,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid var(--brand-divider);
             border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 10px 25px rgba(59, 83, 67, 0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -110,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
     <div class="container my-5" style="max-width: 700px;">
-        <h2 class="brand-title-font mb-4 text-center">Checkout & Payment</h2>
+        <h2 class="checkout-main-title mb-4 text-center">Checkout & Payment</h2>
 
         <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
             <div class="card-box text-center py-5">
